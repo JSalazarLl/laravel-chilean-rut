@@ -65,6 +65,42 @@ final class RutTest extends TestCase
         $this->assertSame('K', Rut::calculateDv('6'));
     }
 
+    public function test_it_generates_a_valid_fake_rut(): void
+    {
+        $rut = Rut::fake();
+
+        $this->assertIsString($rut);
+        $this->assertTrue(Rut::isValid($rut));
+        $this->assertTrue(Rut::isFormatted($rut));
+    }
+
+    public function test_it_generates_multiple_valid_fake_ruts(): void
+    {
+        $ruts = Rut::fake(10);
+
+        $this->assertCount(10, $ruts);
+
+        foreach ($ruts as $rut) {
+            $this->assertTrue(Rut::isValid($rut));
+            $this->assertTrue(Rut::isFormatted($rut));
+        }
+    }
+
+    public function test_faker_is_an_alias_for_fake(): void
+    {
+        $rut = Rut::faker();
+
+        $this->assertIsString($rut);
+        $this->assertTrue(Rut::isValid($rut));
+    }
+
+    public function test_it_limits_fake_rut_quantity(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Rut::fake(51);
+    }
+
     public function test_it_returns_array_representation(): void
     {
         $this->assertSame([

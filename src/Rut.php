@@ -9,6 +9,8 @@ use JSalazarLl\Rut\Data\RutData;
 
 final class Rut
 {
+    private const MAX_FAKE_QUANTITY = 50;
+
     public static function isValid(string|int|null $rut): bool
     {
         $data = self::trySplit($rut);
@@ -99,6 +101,33 @@ final class Rut
             10 => 'K',
             default => (string) $result,
         };
+    }
+
+    /**
+     * @return string|array<int, string>
+     */
+    public static function fake(int $quantity = 1): string|array
+    {
+        if ($quantity < 1 || $quantity > self::MAX_FAKE_QUANTITY) {
+            throw new InvalidArgumentException('La cantidad de RUT falsos debe estar entre 1 y 50.');
+        }
+
+        $ruts = [];
+
+        for ($index = 0; $index < $quantity; $index++) {
+            $digits = (string) random_int(1, 99999999);
+            $ruts[] = self::format($digits.self::calculateDv($digits));
+        }
+
+        return $quantity === 1 ? $ruts[0] : $ruts;
+    }
+
+    /**
+     * @return string|array<int, string>
+     */
+    public static function faker(int $quantity = 1): string|array
+    {
+        return self::fake($quantity);
     }
 
     /**

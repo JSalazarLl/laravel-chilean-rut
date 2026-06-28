@@ -35,6 +35,8 @@ Rut::isValid('12.345.678-5');           // true
 Rut::format('123456785');               // "12.345.678-5"
 Rut::formatForDatabase('12.345.678-5'); // "12345678-5"
 Rut::clean('12.345.678-5');             // "123456785"
+Rut::fake();                            // "12.345.678-5"
+Rut::fake(10);                          // array con 10 RUT validos
 ```
 
 ## Validacion en Laravel
@@ -88,6 +90,7 @@ Para el RUT `12.345.678-5`, la libreria puede entregar:
 | `Rut::clean()`             | `123456785`    | Obtener solo caracteres significativos |
 | `Rut::digits()`            | `12345678`     | Obtener el cuerpo numerico             |
 | `Rut::dv()`                | `5`            | Obtener el digito verificador          |
+| `Rut::fake()`              | `12.345.678-5` | Generar RUT validos para pruebas       |
 
 ## Referencia de API
 
@@ -236,6 +239,29 @@ Firma:
 ```php
 Rut::calculateDv(string|int $digits): string
 ```
+
+### `Rut::fake()`
+
+Genera RUT validos en formato visual chileno. Es util para pruebas, factories, seeders y datos temporales.
+
+```php
+Rut::fake();   // "12.345.678-5"
+Rut::fake(10); // array con 10 RUT validos
+```
+
+Firma:
+
+```php
+Rut::fake(int $quantity = 1): string|array
+```
+
+Alias:
+
+```php
+Rut::faker(int $quantity = 1): string|array
+```
+
+El parametro `$quantity` debe estar entre `1` y `50`. Si pides un solo RUT, retorna un `string`. Si pides mas de uno, retorna un `array<int, string>`.
 
 ### `Rut::toArray()`
 

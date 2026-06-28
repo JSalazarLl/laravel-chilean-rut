@@ -1,0 +1,25 @@
+{
+    "name": "jsalazarll/rut",
+    "description": "Utilidades para validar, formatear y parsear RUT chileno en PHP y Laravel.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "JSalazarLl\\Rut\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JSalazarLl\\Rut\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^11.0|^12.0|^13.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5|^11.0|^12.0"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

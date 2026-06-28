@@ -35,8 +35,10 @@ Rut::isValid('12.345.678-5');           // true
 Rut::format('123456785');               // "12.345.678-5"
 Rut::formatForDatabase('12.345.678-5'); // "12345678-5"
 Rut::clean('12.345.678-5');             // "123456785"
+Rut::normalizeIfValid('12.345.678-5');  // "12345678-5"
+Rut::normalizeIfValid('12.345.678-6');  // null
 Rut::fake();                            // "12.345.678-5"
-Rut::fake(10);                          // array con 10 RUT validos
+Rut::fake(10, 'database');              // array con 10 RUT validos
 ```
 
 ## Validacion en Laravel
@@ -87,6 +89,7 @@ Para el RUT `12.345.678-5`, la libreria puede entregar:
 | -------------------------- | -------------- | -------------------------------------- |
 | `Rut::format()`            | `12.345.678-5` | Mostrar en pantalla                    |
 | `Rut::formatForDatabase()` | `12345678-5`   | Guardar normalizado                    |
+| `Rut::normalizeIfValid()`  | `12345678-5`   | Validar y normalizar sin excepciones   |
 | `Rut::clean()`             | `123456785`    | Obtener solo caracteres significativos |
 | `Rut::digits()`            | `12345678`     | Obtener el cuerpo numerico             |
 | `Rut::dv()`                | `5`            | Obtener el digito verificador          |
@@ -154,6 +157,22 @@ Alias:
 
 ```php
 Rut::normalize(string|int $rut): string
+```
+
+### `Rut::normalizeIfValid()`
+
+Valida un RUT y, si es valido, lo retorna en formato recomendado para base de datos. Si el valor no es valido, retorna `null`.
+
+```php
+Rut::normalizeIfValid('12.345.678-5'); // "12345678-5"
+Rut::normalizeIfValid('12.345.678-6'); // null
+Rut::normalizeIfValid(null);           // null
+```
+
+Firma:
+
+```php
+Rut::normalizeIfValid(string|int|null $rut): ?string
 ```
 
 ### `Rut::clean()`
@@ -242,26 +261,35 @@ Rut::calculateDv(string|int $digits): string
 
 ### `Rut::fake()`
 
-Genera RUT validos en formato visual chileno. Es util para pruebas, factories, seeders y datos temporales.
+Genera RUT validos en el formato que necesites. Es util para pruebas, factories, seeders y datos temporales.
 
 ```php
-Rut::fake();   // "12.345.678-5"
-Rut::fake(10); // array con 10 RUT validos
+Rut::fake();                // "12.345.678-5"
+Rut::fake(format: 'clean'); // "123456785"
+Rut::fake(10, 'database');  // array con 10 RUT validos
 ```
 
 Firma:
 
 ```php
-Rut::fake(int $quantity = 1): string|array
+Rut::fake(int $quantity = 1, string $format = 'formatted'): string|array
 ```
 
 Alias:
 
 ```php
-Rut::faker(int $quantity = 1): string|array
+Rut::faker(int $quantity = 1, string $format = 'formatted'): string|array
 ```
 
 El parametro `$quantity` debe estar entre `1` y `50`. Si pides un solo RUT, retorna un `string`. Si pides mas de uno, retorna un `array<int, string>`.
+
+Formatos disponibles:
+
+| Formato | Ejemplo | Uso sugerido |
+| --- | --- | --- |
+| `formatted` | `12.345.678-5` | Mostrar en pantalla |
+| `database` | `12345678-5` | Guardar normalizado |
+| `clean` | `123456785` | Usar sin puntos ni guion |
 
 ### `Rut::toArray()`
 

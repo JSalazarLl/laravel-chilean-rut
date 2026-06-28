@@ -42,6 +42,15 @@ final class Rut
         return self::formatForDatabase($rut);
     }
 
+    public static function normalizeIfValid(string|int|null $rut): ?string
+    {
+        if (! self::isValid($rut)) {
+            return null;
+        }
+
+        return self::formatForDatabase($rut);
+    }
+
     public static function clean(string|int $rut): string
     {
         return self::parse($rut)->clean();
@@ -106,17 +115,20 @@ final class Rut
     /**
      * @return string|array<int, string>
      */
-    public static function fake(int $quantity = 1): string|array
+    public static function fake(int $quantity = 1, string $format = 'formatted'): string|array
     {
         if ($quantity < 1 || $quantity > self::MAX_FAKE_QUANTITY) {
             throw new InvalidArgumentException('La cantidad de RUT falsos debe estar entre 1 y 50.');
         }
 
+        self::ensureValidFakeFormat($format);
+
         $ruts = [];
 
         for ($index = 0; $index < $quantity; $index++) {
             $digits = (string) random_int(1, 99999999);
-            $ruts[] = self::format($digits.self::calculateDv($digits));
+            $data = new RutData($digits, self::calculateDv($digits));
+            $ruts[] = self::formatFakeData($data, $format);
         }
 
         return $quantity === 1 ? $ruts[0] : $ruts;
@@ -125,9 +137,9 @@ final class Rut
     /**
      * @return string|array<int, string>
      */
-    public static function faker(int $quantity = 1): string|array
+    public static function faker(int $quantity = 1, string $format = 'formatted'): string|array
     {
-        return self::fake($quantity);
+        return self::fake($quantity, $format);
     }
 
     /**
@@ -158,6 +170,22 @@ final class Rut
         if (! self::isValid($rut)) {
             throw new InvalidArgumentException('El RUT recibido no es valido.');
         }
+    }
+
+    private static function ensureValidFakeFormat(string $format): void
+    {
+        if (! in_array($format, ['formatted', 'database', 'clean'], true)) {
+            throw new InvalidArgumentException('El formato debe ser formatted, database o clean.');
+        }
+    }
+
+    private static function formatFakeData(RutData $data, string $format): string
+    {
+        return match ($format) {
+            'formatted' => $data->formatted(),
+            'database' => $data->database(),
+            'clean' => $data->clean(),
+        };
     }
 
     private static function trySplit(string|int|null $rut): ?RutData

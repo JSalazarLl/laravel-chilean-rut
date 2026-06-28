@@ -43,6 +43,13 @@ final class RutTest extends TestCase
         $this->assertSame('12345678-5', Rut::normalize('12.345.678-5'));
     }
 
+    public function test_it_normalizes_only_valid_ruts(): void
+    {
+        $this->assertSame('12345678-5', Rut::normalizeIfValid('12.345.678-5'));
+        $this->assertNull(Rut::normalizeIfValid('12.345.678-6'));
+        $this->assertNull(Rut::normalizeIfValid(null));
+    }
+
     public function test_it_cleans_ruts(): void
     {
         $this->assertSame('123456785', Rut::clean('12.345.678-5'));
@@ -86,12 +93,40 @@ final class RutTest extends TestCase
         }
     }
 
+    public function test_it_generates_fake_ruts_in_different_formats(): void
+    {
+        $formatted = Rut::fake(format: 'formatted');
+        $database = Rut::fake(format: 'database');
+        $clean = Rut::fake(format: 'clean');
+
+        $this->assertTrue(Rut::isFormatted($formatted));
+        $this->assertTrue(Rut::isDatabaseFormat($database));
+        $this->assertMatchesRegularExpression('/^\d{2,9}$/', $clean);
+
+        $this->assertTrue(Rut::isValid($formatted));
+        $this->assertTrue(Rut::isValid($database));
+        $this->assertTrue(Rut::isValid($clean));
+    }
+
+    public function test_it_generates_multiple_fake_ruts_in_the_requested_format(): void
+    {
+        $ruts = Rut::fake(10, 'database');
+
+        $this->assertCount(10, $ruts);
+
+        foreach ($ruts as $rut) {
+            $this->assertTrue(Rut::isValid($rut));
+            $this->assertTrue(Rut::isDatabaseFormat($rut));
+        }
+    }
+
     public function test_faker_is_an_alias_for_fake(): void
     {
-        $rut = Rut::faker();
+        $rut = Rut::faker(format: 'clean');
 
         $this->assertIsString($rut);
         $this->assertTrue(Rut::isValid($rut));
+        $this->assertMatchesRegularExpression('/^\d{2,9}$/', $rut);
     }
 
     public function test_it_limits_fake_rut_quantity(): void
@@ -99,6 +134,13 @@ final class RutTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         Rut::fake(51);
+    }
+
+    public function test_it_rejects_unknown_fake_formats(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Rut::fake(format: 'xml');
     }
 
     public function test_it_returns_array_representation(): void

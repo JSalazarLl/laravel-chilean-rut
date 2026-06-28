@@ -1,5 +1,5 @@
 {
-    "name": "jsalazarll/rut",
+    "name": "jsalazarll/laravel-chilean-rut",
     "description": "Utilidades para validar, formatear y parsear RUT chileno en PHP y Laravel.",
     "type": "library",
     "license": "MIT",

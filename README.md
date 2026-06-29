@@ -17,13 +17,13 @@ Repositorio: [JSalazarLl/laravel-chilean-rut](https://github.com/JSalazarLl/lara
 Instala el paquete con Composer:
 
 ```bash
-composer require jsalazarll/laravel-chilean-rut:^1.0
+composer require jsalazarll/chilean-rut:^1.0
 ```
 
 Si ya agregaste el paquete previamente, puedes actualizarlo con:
 
 ```bash
-composer update jsalazarll/laravel-chilean-rut
+composer update jsalazarll/chilean-rut
 ```
 
 ## Uso rapido
